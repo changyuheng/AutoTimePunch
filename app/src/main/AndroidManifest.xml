@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="changyuheng.autotimepunch" >
+    package="changyuheng.android.autotimepunch" >
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="changyuheng.android.autotimepunch.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,13 +20,20 @@
         </activity>
 
         <receiver
-            android:name="changyuheng.android.autotimepunch.EventReceiver"
+            android:name=".EventReceiver"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.net.wifi.STATE_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name=".database.PunchContentProvider"
+            android:authorities="changyuheng.android.autotimepunch"
+            android:enabled="true"
+            android:exported="false" >
+        </provider>
     </application>
 
 </manifest>

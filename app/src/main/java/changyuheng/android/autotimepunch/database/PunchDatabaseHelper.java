@@ -21,6 +21,13 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE " + Tables.PROJECT + " ("
+                + ProjectColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + ProjectColumns.NAME + " TEXT, "
+                + ProjectColumns.TIME_ZONE + " INTEGER, "
+                + ProjectColumns.WIFI_TRIGGER + " TEXT"
+                + ");");
+
         db.execSQL("CREATE TABLE " + Tables.CARD + " ("
                 + CardColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + CardColumns.TIME + " INTEGER, "
@@ -44,13 +51,19 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public interface Tables {
+        public static final String PROJECT = "project";
         public static final String CARD = "card";
+    }
+
+    public interface ProjectColumns extends BaseColumns {
+        public static final String NAME = "name";
+        public static final String TIME_ZONE = "time_zone";
+        public static final String WIFI_TRIGGER = "wifi_trigger";
     }
 
     public interface CardColumns extends BaseColumns {
         public static final String TIME = "unix_time";
         public static final String PUNCH_IN = "punch_in";
         public static final String PROJECT = "project";
-
     }
 }

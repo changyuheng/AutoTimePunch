@@ -1,7 +1,5 @@
 package changyuheng.android.autotimepunch;
 
-import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
-
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.text.format.Time;
+
+import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
 
 public class EventReceiver extends BroadcastReceiver {
     public EventReceiver() {
@@ -26,8 +26,6 @@ public class EventReceiver extends BroadcastReceiver {
         switch (action) {
             case WifiManager.NETWORK_STATE_CHANGED_ACTION:
                 handleWifiNetworkStateChanged(context, intent);
-                break;
-            default:
                 break;
         }
     }
