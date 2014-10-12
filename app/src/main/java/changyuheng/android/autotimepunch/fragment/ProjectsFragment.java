@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import changyuheng.android.autotimepunch.R;
 import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
@@ -79,6 +80,12 @@ public class ProjectsFragment extends ListFragment implements
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        String name = ((TextView) v).getText().toString();
+
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(android.R.id.content, CardFragment.newInstance(name))
+                .commit();
     }
 
     @Override
@@ -98,7 +105,7 @@ public class ProjectsFragment extends ListFragment implements
         if (item.getItemId() == R.id.action_new) {
             getFragmentManager().beginTransaction()
                     .addToBackStack(null)
-                    .replace(android.R.id.content, new NewProjectFragment())
+                    .replace(android.R.id.content, new EditProjectFragment())
                     .commit();
             return true;
         }
