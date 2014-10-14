@@ -45,8 +45,6 @@ public class CardFragment extends ListFragment {
             mProjectName = getArguments().getString(PROJECT_NAME);
         }
 
-        android.util.Log.d("henry", "project: " + mProjectName);
-
         // TODO: Change Adapter to display your content
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));

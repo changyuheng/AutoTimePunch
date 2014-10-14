@@ -42,6 +42,13 @@ public class EditProjectFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        mProjectName.requestFocus();
+
+        super.onResume();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -90,7 +97,7 @@ public class EditProjectFragment extends Fragment {
     private void saveProjectDetail() {
         String projectName = mProjectName.getText().toString();
         int timeZone = (int) (Float.parseFloat(mTimeZoneSpinner.getSelectedItem().toString())
-                * 60 * 60 * 1000);
+                * 60 * 60);
         String wifiTrigger = mWifiSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(projectName)) return;
