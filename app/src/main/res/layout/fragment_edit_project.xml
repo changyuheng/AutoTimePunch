@@ -3,11 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragment.NewProjectFragment"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    android:focusable="true"
-    android:focusableInTouchMode="true">
+    tools:context=".fragment.NewProjectFragment">
 
     <Space
         android:layout_width="wrap_content"
@@ -21,13 +19,14 @@
 
     <Space
         android:layout_width="wrap_content"
-        android:layout_height="8dp" />
+        android:layout_height="16dp" />
 
     <EditText
         style="?android:attr/editTextStyle"
         android:id="@+id/edittext_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:singleLine="true" />
 
     <Space
         android:layout_width="wrap_content"
@@ -39,9 +38,10 @@
         android:layout_height="wrap_content"
         android:text="@string/edit_project_time_zone" />
 
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="8dp" />
+    <Spinner
+        android:id="@+id/time_zone_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <TextView
         style="?android:attr/listSeparatorTextViewStyle"
@@ -49,13 +49,9 @@
         android:layout_height="wrap_content"
         android:text="@string/edit_project_wifi_trigger" />
 
-    <Space
-        android:layout_width="wrap_content"
-        android:layout_height="8dp" />
-
     <Spinner
-        android:id="@+id/planets_spinner"
-        android:layout_width="fill_parent"
+        android:id="@+id/wifi_spinner"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

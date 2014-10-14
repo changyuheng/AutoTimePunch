@@ -1,12 +1,10 @@
 package changyuheng.android.autotimepunch.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import changyuheng.android.autotimepunch.R;
 
 import changyuheng.android.autotimepunch.fragment.dummy.DummyContent;
 
@@ -46,9 +44,17 @@ public class CardFragment extends ListFragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
 
+        initOptionsMenu();
+
         // TODO: Change Adapter to display your content
         setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                 android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+    }
+
+    private void initOptionsMenu() {
+        setHasOptionsMenu(true);
+        getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActivity().getActionBar().setHomeButtonEnabled(true);
     }
 
     @Override

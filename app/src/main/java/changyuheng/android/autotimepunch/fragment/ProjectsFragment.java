@@ -74,6 +74,7 @@ public class ProjectsFragment extends ListFragment implements
 
     public void onResume() {
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActivity().getActionBar().setHomeButtonEnabled(false);
 
         super.onResume();
     }
@@ -118,7 +119,7 @@ public class ProjectsFragment extends ListFragment implements
         // the search filter, and restart the loader to do a new query
         // with this filter.
         mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
-        getLoaderManager().restartLoader(0, null, this);
+//        getLoaderManager().restartLoader(0, null, this);
         return true;
     }
 
