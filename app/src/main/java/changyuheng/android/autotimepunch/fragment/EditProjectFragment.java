@@ -7,6 +7,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,12 +88,15 @@ public class EditProjectFragment extends Fragment {
     }
 
     private void saveProjectDetail() {
+        String projectName = mProjectName.getText().toString();
         int timeZone = (int) (Float.parseFloat(mTimeZoneSpinner.getSelectedItem().toString())
                 * 60 * 60 * 1000);
         String wifiTrigger = mWifiSpinner.getSelectedItem().toString();
 
+        if (TextUtils.isEmpty(projectName)) return;
+
         ContentValues values = new ContentValues();
-        values.put(PunchDatabaseHelper.ProjectColumns.NAME, mProjectName.getText().toString());
+        values.put(PunchDatabaseHelper.ProjectColumns.NAME, projectName);
         values.put(PunchDatabaseHelper.ProjectColumns.TIME_ZONE, timeZone);
         values.put(PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER, wifiTrigger);
 
