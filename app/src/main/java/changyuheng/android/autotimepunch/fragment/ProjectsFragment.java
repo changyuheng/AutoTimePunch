@@ -1,35 +1,26 @@
 package changyuheng.android.autotimepunch.fragment;
 
 import android.app.ListFragment;
-import android.app.LoaderManager;
-import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import changyuheng.android.autotimepunch.R;
 import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
 
-public class ProjectsFragment extends ListFragment implements
-        SearchView.OnQueryTextListener, LoaderManager.LoaderCallbacks<Cursor> {
-
-    // This is the Adapter being used to display the list's data.
-    SimpleCursorAdapter mAdapter;
-
-    // If non-null, this is the current filter the user has provided.
-    String mCurFilter;
+public class ProjectsFragment extends ListFragment {
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -39,46 +30,51 @@ public class ProjectsFragment extends ListFragment implements
     }
 
     @Override
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        initLayout(view);
+
+        return view;
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         // Give some text to display if there is no data.  In a real
         // application this would come from a resource.
-//        setEmptyText(getText(R.string.project_list_empty));
-
-        // We have a menu item to show in action bar.
-        setHasOptionsMenu(true);
-
-        SQLiteDatabase db = PunchDatabaseHelper.getInstance(getActivity()).getReadableDatabase();
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
-        Cursor c = qb.query(
-                db,
-                PROJECTS_SUMMARY_PROJECTION,
-                null, null, null, null, null);
-
-        mAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_1,
-                c,
-                new String[] {PunchDatabaseHelper.ProjectColumns.NAME},
-                new int[] {android.R.id.text1},
-                0);
-
-        setListAdapter(mAdapter);
-
-        // Start out with a progress indicator.
-//        setListShown(false);
-
-        // Prepare the loader.  Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+        setEmptyText(getText(R.string.project_list_empty));
     }
 
     public void onResume() {
-        getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
-        getActivity().getActionBar().setHomeButtonEnabled(false);
+        updateAdapter();
+        updateUi();
 
         super.onResume();
+    }
+
+    private void updateAdapter() {
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(getActivity()).getReadableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
+
+        Cursor c = qb.query(db, PunchDatabaseHelper.PROJECT_PROJECTION, null,
+                null, null, null, null);
+
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_1, c,
+                new String[] {PunchDatabaseHelper.ProjectColumns.DISPLAY_NAME},
+                new int[] {android.R.id.text1}, 0);
+
+        setListAdapter(adapter);
+    }
+
+    private void updateUi() {
+        setHasOptionsMenu(true);
+        getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
+        getActivity().getActionBar().setHomeButtonEnabled(false);
     }
 
     @Override
@@ -92,21 +88,28 @@ public class ProjectsFragment extends ListFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, null);
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Place an action bar item for searching.
         inflater.inflate(R.menu.projects, menu);
+    }
 
-        SearchView sv = new SearchView(getActivity());
-        sv.setOnQueryTextListener(this);
+    private void initLayout(View rootView) {
+        setMargins(rootView);
+    }
 
-        MenuItem item = menu.findItem(R.id.action_search);
-        item.setActionView(sv);
+    private void setMargins(View view) {
+        FrameLayout layout = (FrameLayout) view.findViewById(
+                Resources.getSystem().getIdentifier("listContainer","id", "android"));
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        final float scale = getActivity().getResources().getDisplayMetrics().density;
+        int pixels = (int) (16 * scale + 0.5f);
+
+        lp.setMarginStart(pixels);
+        lp.setMarginEnd(pixels);
+
+        layout.setLayoutParams(lp);
     }
 
     @Override
@@ -119,54 +122,5 @@ public class ProjectsFragment extends ListFragment implements
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // Called when the action bar search text has changed.  Update
-        // the search filter, and restart the loader to do a new query
-        // with this filter.
-        mCurFilter = !TextUtils.isEmpty(newText) ? newText : null;
-//        getLoaderManager().restartLoader(0, null, this);
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // Don't care about this.
-        return true;
-    }
-
-    private static final String[] PROJECTS_SUMMARY_PROJECTION = new String[] {
-            PunchDatabaseHelper.ProjectColumns._ID,
-            PunchDatabaseHelper.ProjectColumns.NAME,
-    };
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // TODO: Build ContentProvider to response the request.
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in.  (The framework will take care of closing the
-        // old cursor once we return.)
-        mAdapter.swapCursor(data);
-
-        // The list should now be shown.
-        if (isResumed()) {
-            setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed.  We need to make sure we are no
-        // longer using it.
-        mAdapter.swapCursor(null);
     }
 }

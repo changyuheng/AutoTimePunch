@@ -16,11 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import changyuheng.android.autotimepunch.R;
 import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
@@ -32,20 +33,6 @@ public class EditProjectFragment extends Fragment {
     private Spinner mTimeZoneSpinner;
 
     public EditProjectFragment() {
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        initOptionsMenu();
-    }
-
-    @Override
-    public void onResume() {
-        mProjectName.requestFocus();
-
-        super.onResume();
     }
 
     @Override
@@ -71,14 +58,17 @@ public class EditProjectFragment extends Fragment {
         mTimeZoneSpinner = (Spinner) view.findViewById(R.id.time_zone_spinner);
         mTimeZoneSpinner.setAdapter(new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_dropdown_item,
-                new String[] {"-11", "-10.5", "-10", "-9.5", "-9", "-8.5", "-8", "-7.5", "-7",
-                        "-6.5", "-6", "-5.5", "-5", "-4.5", "-4", "-3.5", "-3", "-2.5", "-2",
-                        "-1.5", "-1", "-0.5", "0", "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4",
-                        "4.5", "5", "5.5", "6", "6.5", "7", "7.5", "8", "8.5", "9", "9.5", "10",
-                        "10.5", "11", "11.5", "12", "12.5", "13"}
+                new String[] {Calendar.getInstance().getTimeZone().getDisplayName()}
         ));
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        updateUi();
+
+        super.onResume();
     }
 
     @Override
@@ -96,14 +86,14 @@ public class EditProjectFragment extends Fragment {
 
     private void saveProjectDetail() {
         String projectName = mProjectName.getText().toString();
-        int timeZone = (int) (Float.parseFloat(mTimeZoneSpinner.getSelectedItem().toString())
-                * 60 * 60 * 1000);
+        int timeZone = 8 * 60 * 60 * 1000;
         String wifiTrigger = mWifiSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(projectName)) return;
 
         ContentValues values = new ContentValues();
-        values.put(PunchDatabaseHelper.ProjectColumns.NAME, projectName);
+        values.put(PunchDatabaseHelper.ProjectColumns.UUID, UUID.randomUUID().toString());
+        values.put(PunchDatabaseHelper.ProjectColumns.DISPLAY_NAME, projectName);
         values.put(PunchDatabaseHelper.ProjectColumns.TIME_ZONE, timeZone);
         values.put(PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER, wifiTrigger);
 
@@ -117,9 +107,11 @@ public class EditProjectFragment extends Fragment {
         inflater.inflate(R.menu.edit_project, menu);
     }
 
-    private void initOptionsMenu() {
+
+    private void updateUi() {
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().getActionBar().setHomeButtonEnabled(true);
+        mProjectName.requestFocus();
     }
 }

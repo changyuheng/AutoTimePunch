@@ -23,16 +23,17 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + Tables.PROJECT + " ("
                 + ProjectColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + ProjectColumns.NAME + " TEXT, "
-                + ProjectColumns.TIME_ZONE + " INTEGER, "
+                + ProjectColumns.UUID + " TEXT,"
+                + ProjectColumns.DISPLAY_NAME + " TEXT,"
+                + ProjectColumns.TIME_ZONE + " INTEGER,"
                 + ProjectColumns.WIFI_TRIGGER + " TEXT"
                 + ");");
 
         db.execSQL("CREATE TABLE " + Tables.CARD + " ("
                 + CardColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + CardColumns.TIME + " INTEGER, "
-                + CardColumns.PUNCH_IN + " INTEGER, "
-                + CardColumns.PROJECT + " TEXT"
+                + CardColumns.PROJECT + " TEXT,"
+                + CardColumns.TIME + " INTEGER,"
+                + CardColumns.IS_PUNCH_IN + " INTEGER"
                 + ");");
     }
 
@@ -56,7 +57,7 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
     }
 
     public interface ProjectColumns extends BaseColumns {
-        public static final String NAME = "name";
+        public static final String UUID = "uuid";
         public static final String DISPLAY_NAME = "display_name";
         public static final String TIME_ZONE = "time_zone";
         public static final String WIFI_TRIGGER = "wifi_trigger";
@@ -65,6 +66,21 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
     public interface CardColumns extends BaseColumns {
         public static final String PROJECT = "project";
         public static final String TIME = "unix_time";
-        public static final String PUNCH_IN = "punch_in";
+        public static final String IS_PUNCH_IN = "is_punch_in";
     }
+
+    public static final String[] PROJECT_PROJECTION = new String[] {
+            ProjectColumns._ID,
+            ProjectColumns.UUID,
+            ProjectColumns.DISPLAY_NAME,
+            ProjectColumns.TIME_ZONE,
+            ProjectColumns.WIFI_TRIGGER,
+    };
+
+    public static final String[] CARD_PROJECTION = new String[] {
+            CardColumns._ID,
+            CardColumns.PROJECT,
+            CardColumns.TIME,
+            CardColumns.IS_PUNCH_IN,
+    };
 }

@@ -28,12 +28,6 @@
             </intent-filter>
         </receiver>
 
-        <provider
-            android:name=".database.PunchContentProvider"
-            android:authorities="changyuheng.android.autotimepunch"
-            android:enabled="true"
-            android:exported="false" >
-        </provider>
     </application>
 
 </manifest>

@@ -9,8 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
-import android.text.TextUtils;
 import android.text.format.Time;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
 
@@ -48,74 +50,93 @@ public class EventReceiver extends BroadcastReceiver {
 
         if (networkState == null) return;
 
-        SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getWritableDatabase();
-        String state = null;
+        List<String> projects = null;
         boolean isPunchIn = false;
-        String ssid = null;
-        Time now = new Time();
-        now.setToNow();
 
         switch (networkState) {
             case CONNECTED:
-                state = "CONNECTED";
-                ssid = wifiManager.getConnectionInfo().getSSID().replace("\"", "");
+                String ssid = wifiManager.getConnectionInfo().getSSID().replace("\"", "");
+                projects = getProjectsUUID(context, ssid);
                 isPunchIn = true;
                 break;
             case DISCONNECTED:
-                state = "DISCONNECTED";
+                projects = getProjectsUUID(context);
                 break;
             default:
-                break;
+                return;
         }
 
+        if (projects.size() == 0) return;
+
+        punch(context, projects, isPunchIn);
+    }
+
+    private List<String> getProjectsUUID(Context context) {
+        List<String> result = new ArrayList<>();
+
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(PunchDatabaseHelper.Tables.CARD);
-        Cursor c = qb.query(
-                db,
-                CARD_SUMMARY_PROJECTION,
-                null, null, null, null, null);
+        Cursor c = qb.query(db, PunchDatabaseHelper.CARD_PROJECTION, null,
+                null, null, null, null);
 
-        if (TextUtils.isEmpty(ssid)) {
+        if (c == null) return result;
+
+        do {
             c.moveToLast();
-            boolean in = c.getInt(c.getColumnIndex(PunchDatabaseHelper.CardColumns.PUNCH_IN)) != 0;
 
-            if (TextUtils.isEmpty(ssid)) return;
-        }
+            boolean isLastOnePunchIn = c.getInt(c.getColumnIndex(
+                    PunchDatabaseHelper.CardColumns.IS_PUNCH_IN)) != 0;
 
-        String project = null;
+            if (!isLastOnePunchIn) break;
+
+            result.add(c.getString(c.getColumnIndex(PunchDatabaseHelper.CardColumns.PROJECT)));
+        } while (c.moveToPrevious());
+
+        return result;
+    }
+
+    private List<String> getProjectsUUID(Context context, String ssid) {
+        List<String> result = new ArrayList<>();
+
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getReadableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
-        c = qb.query(
-                db,
-                PROJECT_SUMMARY_PROJECTION,
-                null, null, null, null, null);
+        Cursor c = qb.query(db, PunchDatabaseHelper.PROJECT_PROJECTION, null,
+                null, null, null, null);
+
+        if (c == null) return result;
 
         while (c.moveToNext()) {
             String trigger = c.getString(c.getColumnIndex(
                     PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER));
-            if (trigger.equals(ssid)) project = c.getString(c.getColumnIndex(
-                    PunchDatabaseHelper.ProjectColumns.NAME));
+
+            if (!ssid.equals(trigger)) continue;
+
+            String uuid = c.getString(c.getColumnIndex(
+                    PunchDatabaseHelper.ProjectColumns.UUID));
+
+            result.add(uuid);
         }
 
-        if (TextUtils.isEmpty(project)) return;
+        return result;
+    }
 
-        ContentValues values = new ContentValues();
-        values.put(PunchDatabaseHelper.CardColumns.TIME, now.toMillis(false));
-        values.put(PunchDatabaseHelper.CardColumns.PUNCH_IN, isPunchIn);
-        values.put(PunchDatabaseHelper.CardColumns.PROJECT, project);
+    private void punch(Context context, List<String> projects, boolean isPunchIn) {
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getWritableDatabase();
+        Time time = new Time();
 
-        if (state != null) {
+        time.setToNow();
+        long now = time.toMillis(false);
+
+        for (String project : projects) {
+            ContentValues values = new ContentValues();
+
+            values.put(PunchDatabaseHelper.CardColumns.PROJECT, project);
+            values.put(PunchDatabaseHelper.CardColumns.TIME, now);
+            values.put(PunchDatabaseHelper.CardColumns.IS_PUNCH_IN, isPunchIn);
+
             db.insert(PunchDatabaseHelper.Tables.CARD, null, values);
         }
     }
-
-    private static final String[] CARD_SUMMARY_PROJECTION = new String[] {
-            PunchDatabaseHelper.CardColumns._ID,
-            PunchDatabaseHelper.CardColumns.PUNCH_IN,
-    };
-
-    private static final String[] PROJECT_SUMMARY_PROJECTION = new String[] {
-            PunchDatabaseHelper.ProjectColumns._ID,
-            PunchDatabaseHelper.ProjectColumns.NAME,
-            PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER,
-    };
 }
