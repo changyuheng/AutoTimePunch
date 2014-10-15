@@ -75,7 +75,7 @@ public class CardFragment extends ListFragment {
         qb.setTables(PunchDatabaseHelper.Tables.CARD);
 
         Cursor c = qb.query(db, PunchDatabaseHelper.CARD_PROJECTION,
-                PunchDatabaseHelper.CardColumns.PROJECT + "=" + uuid,
+                PunchDatabaseHelper.CardColumns.PROJECT + "=\"" + uuid + "\"",
                 null, null, null, null);
 
         List<Map<String, String>> l = new ArrayList<>();
@@ -134,10 +134,10 @@ public class CardFragment extends ListFragment {
 
         qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
         Cursor c = qb.query(db, PunchDatabaseHelper.PROJECT_PROJECTION,
-                PunchDatabaseHelper.ProjectColumns.DISPLAY_NAME + "=" + mProjectName,
+                PunchDatabaseHelper.ProjectColumns.DISPLAY_NAME + "=\"" + mProjectName + "\"",
                 null, null, null, null);
 
-        if (c == null) return uuid;
+        if (c == null || c.getCount() == 0) return uuid;
 
         uuid = c.getString(c.getColumnIndex(PunchDatabaseHelper.ProjectColumns.UUID));
 
