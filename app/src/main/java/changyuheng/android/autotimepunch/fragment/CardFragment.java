@@ -1,12 +1,15 @@
 package changyuheng.android.autotimepunch.fragment;
 
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -18,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import changyuheng.android.autotimepunch.R;
 import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
 
 /**
@@ -59,6 +61,16 @@ public class CardFragment extends ListFragment {
     }
 
     @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        initLayout(view);
+
+        return view;
+    }
+
+    @Override
     public void onResume() {
         updateUi();
         updateAdapter();
@@ -78,10 +90,12 @@ public class CardFragment extends ListFragment {
                 PunchDatabaseHelper.CardColumns.PROJECT + "=\"" + uuid + "\"",
                 null, null, null, null);
 
+        if (c == null) return;
+
         List<Map<String, String>> l = new ArrayList<>();
 
         while (c.moveToNext()) {
-            int unixTime = c.getInt(c.getColumnIndex(PunchDatabaseHelper.CardColumns.TIME));
+            long unixTime = c.getLong(c.getColumnIndex(PunchDatabaseHelper.CardColumns.TIME));
             boolean isPunchIn = c.getInt(c.getColumnIndex(
                     PunchDatabaseHelper.CardColumns.IS_PUNCH_IN)) != 0;
 
@@ -94,13 +108,15 @@ public class CardFragment extends ListFragment {
             map.put("punch_out", "");
             map.put("duration", "");
             l.add(map);
+            android.util.Log.d("henry", date);
         }
 
-        ListAdapter adapter = new SimpleAdapter(getActivity(),
-                l,
-                R.layout.list_item_card,
-                new String[] {"date", "punch_in", "punch_out", "duration"},
-                new int[] {R.id.date, R.id.punch_in, R.id.punch_out, R.id.duration});
+//        ListAdapter adapter = new SimpleAdapter(getActivity(), l, R.layout.list_item_card,
+//                new String[] {"date", "punch_in", "punch_out", "duration"},
+//                new int[] {R.id.date, R.id.punch_in, R.id.punch_out, R.id.duration});
+        ListAdapter adapter = new SimpleAdapter(getActivity(), l, android.R.layout.simple_list_item_1,
+                new String[] {"date"},
+                new int[] {android.R.id.text1});
 
         setListAdapter(adapter);
     }
@@ -137,10 +153,26 @@ public class CardFragment extends ListFragment {
                 PunchDatabaseHelper.ProjectColumns.DISPLAY_NAME + "=\"" + mProjectName + "\"",
                 null, null, null, null);
 
-        if (c == null || c.getCount() == 0) return uuid;
+        if (c == null) return uuid;
+
+        if (!c.moveToFirst()) return uuid;
 
         uuid = c.getString(c.getColumnIndex(PunchDatabaseHelper.ProjectColumns.UUID));
 
         return uuid;
     }
+    private void initLayout(View rootView) {
+        setMargins(rootView);
+    }
+
+    private void setMargins(View view) {
+        View layout = view.findViewById(
+                Resources.getSystem().getIdentifier("listContainer","id", "android"));
+
+        final float scale = getActivity().getResources().getDisplayMetrics().density;
+        int pixels = (int) (16 * scale + 0.5f);
+
+        layout.setPadding(pixels, 0, pixels, 0);
+    }
+
 }

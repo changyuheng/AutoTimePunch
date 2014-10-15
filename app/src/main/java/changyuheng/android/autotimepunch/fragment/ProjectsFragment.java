@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -89,7 +88,6 @@ public class ProjectsFragment extends ListFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Place an action bar item for searching.
         inflater.inflate(R.menu.projects, menu);
     }
 
@@ -98,18 +96,13 @@ public class ProjectsFragment extends ListFragment {
     }
 
     private void setMargins(View view) {
-        FrameLayout layout = (FrameLayout) view.findViewById(
+        View layout = view.findViewById(
                 Resources.getSystem().getIdentifier("listContainer","id", "android"));
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         final float scale = getActivity().getResources().getDisplayMetrics().density;
         int pixels = (int) (16 * scale + 0.5f);
 
-        lp.setMarginStart(pixels);
-        lp.setMarginEnd(pixels);
-
-        layout.setLayoutParams(lp);
+        layout.setPadding(pixels, 0, pixels, 0);
     }
 
     @Override

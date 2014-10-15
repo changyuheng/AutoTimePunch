@@ -1,5 +1,6 @@
 package changyuheng.android.autotimepunch.fragment;
 
+import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -78,6 +80,9 @@ public class EditProjectFragment extends Fragment {
                 saveProjectDetail();
             case R.id.action_cancel:
             case android.R.id.home:
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Service.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mProjectName.getWindowToken(), 0);
                 getFragmentManager().popBackStack();
                 return true;
         }
@@ -99,7 +104,7 @@ public class EditProjectFragment extends Fragment {
 
         SQLiteDatabase db = PunchDatabaseHelper.getInstance(getActivity()).getWritableDatabase();
         db.insert(PunchDatabaseHelper.Tables.PROJECT, null, values);
-     }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -112,6 +117,10 @@ public class EditProjectFragment extends Fragment {
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().getActionBar().setHomeButtonEnabled(true);
+
         mProjectName.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                Service.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mProjectName, 0);
     }
 }

@@ -78,20 +78,18 @@ public class EventReceiver extends BroadcastReceiver {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(PunchDatabaseHelper.Tables.CARD);
         Cursor c = qb.query(db, PunchDatabaseHelper.CARD_PROJECTION, null,
-                null, null, null, null);
+                null, null, null, PunchDatabaseHelper.CardColumns._ID + " DESC");
 
         if (c == null) return result;
 
-        do {
-            c.moveToLast();
-
+        while (c.moveToNext()) {
             boolean isLastOnePunchIn = c.getInt(c.getColumnIndex(
                     PunchDatabaseHelper.CardColumns.IS_PUNCH_IN)) != 0;
 
             if (!isLastOnePunchIn) break;
 
             result.add(c.getString(c.getColumnIndex(PunchDatabaseHelper.CardColumns.PROJECT)));
-        } while (c.moveToPrevious());
+        }
 
         return result;
     }
