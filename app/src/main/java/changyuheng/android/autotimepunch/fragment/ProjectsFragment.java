@@ -8,10 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
@@ -42,7 +44,7 @@ public class ProjectsFragment extends ListFragment implements
 
         // Give some text to display if there is no data.  In a real
         // application this would come from a resource.
-        setEmptyText(getText(R.string.project_list_empty));
+//        setEmptyText(getText(R.string.project_list_empty));
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
@@ -58,8 +60,8 @@ public class ProjectsFragment extends ListFragment implements
         mAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1,
                 c,
-                new String[]{PunchDatabaseHelper.ProjectColumns.NAME},
-                new int[]{android.R.id.text1},
+                new String[] {PunchDatabaseHelper.ProjectColumns.NAME},
+                new int[] {android.R.id.text1},
                 0);
 
         setListAdapter(mAdapter);
@@ -81,12 +83,18 @@ public class ProjectsFragment extends ListFragment implements
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        String name = ((TextView) v).getText().toString();
+        String name = ((TextView) v.findViewById(android.R.id.text1)).getText().toString();
 
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
                 .replace(android.R.id.content, CardFragment.newInstance(name))
                 .commit();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_list, null);
     }
 
     @Override
@@ -129,8 +137,7 @@ public class ProjectsFragment extends ListFragment implements
         return true;
     }
 
-    // These are the Contacts rows that we will retrieve.
-    static final String[] PROJECTS_SUMMARY_PROJECTION = new String[] {
+    private static final String[] PROJECTS_SUMMARY_PROJECTION = new String[] {
             PunchDatabaseHelper.ProjectColumns._ID,
             PunchDatabaseHelper.ProjectColumns.NAME,
     };

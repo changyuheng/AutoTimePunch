@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    tools:context=".fragment.NewProjectFragment">
+    tools:context=".fragment.EditProjectFragment">
 
     <Space
         android:layout_width="wrap_content"

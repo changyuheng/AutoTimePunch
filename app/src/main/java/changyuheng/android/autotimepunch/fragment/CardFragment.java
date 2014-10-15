@@ -1,13 +1,25 @@
 package changyuheng.android.autotimepunch.fragment;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
-import changyuheng.android.autotimepunch.fragment.dummy.DummyContent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import changyuheng.android.autotimepunch.R;
+import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
 
 /**
  * A fragment representing a list of Items.
@@ -45,9 +57,70 @@ public class CardFragment extends ListFragment {
             mProjectName = getArguments().getString(PROJECT_NAME);
         }
 
-        // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(getActivity()).getReadableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
+        Cursor c = qb.query(
+                db,
+                PROJECT_SUMMARY_PROJECTION,
+                null, null, null, null, null);
+
+        int timeZone = 0;
+        String trigger = null;
+
+        while (c.moveToNext()) {
+            String project = c.getString(c.getColumnIndex(PunchDatabaseHelper.ProjectColumns.NAME));
+
+            if (!mProjectName.equals(project)) continue;
+
+            timeZone = c.getInt(c.getColumnIndex(PunchDatabaseHelper.ProjectColumns.TIME_ZONE));
+            trigger = c.getString(c.getColumnIndex(PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER));
+        }
+
+        qb.setTables(PunchDatabaseHelper.Tables.CARD);
+
+        c = qb.query(
+                db,
+                CARD_PROJECTION,
+                null, null, null, null, null);
+
+        List<Map<String, String>> l = new ArrayList<Map<String, String>>();
+
+        int punchInTime = 0;
+        int punchOutTime = 0;
+        while (c.moveToNext()) {
+            String t = c.getString(c.getColumnIndex(PunchDatabaseHelper.CardColumns.PROJECT));
+            android.util.Log.d("henry", "project = " + trigger);
+
+            if (!t.equals(trigger)) continue;
+
+            int time = c.getInt(c.getColumnIndex(PunchDatabaseHelper.CardColumns.TIME));
+            boolean punchIn = c.getInt(c.getColumnIndex(PunchDatabaseHelper.CardColumns.PUNCH_IN)) != 0;
+
+            time += timeZone;
+
+            if (punchInTime == 0 && punchIn) {
+                punchInTime = time;
+            } else {
+                continue;
+            }
+
+            Map map = new HashMap();
+            map.put("date", Integer.toString(time));
+            map.put("punch_in", Integer.toString(punchInTime));
+            map.put("punch_out", Integer.toString(punchOutTime));
+            map.put("duration", "");
+            l.add(map);
+        }
+
+        ListAdapter adapter = new SimpleAdapter(getActivity(),
+                l,
+                R.layout.list_item_card,
+                new String[] {"date", "punch_in", "punch_out", "duration"},
+                new int[] {R.id.date, R.id.punch_in, R.id.punch_out, R.id.duration});
+
+        setListAdapter(adapter);
     }
 
     @Override
@@ -55,6 +128,12 @@ public class CardFragment extends ListFragment {
         initOptionsMenu();
 
         super.onResume();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_list, null);
     }
 
     private void initOptionsMenu() {
@@ -77,4 +156,17 @@ public class CardFragment extends ListFragment {
         }
         return false;
     }
+
+    private static final String[] CARD_PROJECTION = new String[] {
+            PunchDatabaseHelper.CardColumns._ID,
+            PunchDatabaseHelper.CardColumns.TIME,
+            PunchDatabaseHelper.CardColumns.PUNCH_IN,
+            PunchDatabaseHelper.CardColumns.PROJECT,
+    };
+    private static final String[] PROJECT_SUMMARY_PROJECTION = new String[] {
+            PunchDatabaseHelper.ProjectColumns._ID,
+            PunchDatabaseHelper.ProjectColumns.NAME,
+            PunchDatabaseHelper.ProjectColumns.TIME_ZONE,
+            PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER,
+    };
 }

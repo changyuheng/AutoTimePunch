@@ -3,7 +3,7 @@ package changyuheng.android.autotimepunch.fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -59,8 +59,8 @@ public class EditProjectFragment extends Fragment {
         WifiManager wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         List<String> wifiList = new ArrayList<String>();
         if (wifi != null) {
-            for (ScanResult result : wifi.getScanResults()) {
-                String ssid = result.SSID.replace("\"", "");
+            for (WifiConfiguration ap : wifi.getConfiguredNetworks()) {
+                String ssid = ap.SSID.replace("\"", "");
                 wifiList.add(ssid);
             }
         }
@@ -97,7 +97,7 @@ public class EditProjectFragment extends Fragment {
     private void saveProjectDetail() {
         String projectName = mProjectName.getText().toString();
         int timeZone = (int) (Float.parseFloat(mTimeZoneSpinner.getSelectedItem().toString())
-                * 60 * 60);
+                * 60 * 60 * 1000);
         String wifiTrigger = mWifiSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(projectName)) return;

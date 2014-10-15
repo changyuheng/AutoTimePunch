@@ -10,5 +10,6 @@
     <string name="edit_project_name">Project Name</string>
     <string name="edit_project_time_zone">Time Zone</string>
     <string name="edit_project_wifi_trigger">Wi-Fi Trigger</string>
+    <string name="list_loading">Loading...</string>
 
 </resources>

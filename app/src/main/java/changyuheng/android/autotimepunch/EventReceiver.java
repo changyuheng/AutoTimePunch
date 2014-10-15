@@ -4,9 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 import android.text.format.Time;
 
 import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
@@ -45,10 +48,10 @@ public class EventReceiver extends BroadcastReceiver {
 
         if (networkState == null) return;
 
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getWritableDatabase();
         String state = null;
-        String ssid = "";
-        ContentValues values = new ContentValues();
-
+        boolean isPunchIn = false;
+        String ssid = null;
         Time now = new Time();
         now.setToNow();
 
@@ -56,23 +59,63 @@ public class EventReceiver extends BroadcastReceiver {
             case CONNECTED:
                 state = "CONNECTED";
                 ssid = wifiManager.getConnectionInfo().getSSID().replace("\"", "");
-                values.put(PunchDatabaseHelper.CardColumns.TIME, now.toMillis(false) / 1000L);
-                values.put(PunchDatabaseHelper.CardColumns.PUNCH_IN, 1);
-                values.put(PunchDatabaseHelper.CardColumns.PROJECT, ssid);
+                isPunchIn = true;
                 break;
             case DISCONNECTED:
                 state = "DISCONNECTED";
-                values.put(PunchDatabaseHelper.CardColumns.TIME, now.toMillis(false) / 1000L);
-                values.put(PunchDatabaseHelper.CardColumns.PUNCH_IN, 0);
-                values.put(PunchDatabaseHelper.CardColumns.PROJECT, ssid);
                 break;
             default:
                 break;
         }
 
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(PunchDatabaseHelper.Tables.CARD);
+        Cursor c = qb.query(
+                db,
+                CARD_SUMMARY_PROJECTION,
+                null, null, null, null, null);
+
+        if (TextUtils.isEmpty(ssid)) {
+            c.moveToLast();
+            boolean in = c.getInt(c.getColumnIndex(PunchDatabaseHelper.CardColumns.PUNCH_IN)) != 0;
+
+            if (TextUtils.isEmpty(ssid)) return;
+        }
+
+        String project = null;
+        qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
+        c = qb.query(
+                db,
+                PROJECT_SUMMARY_PROJECTION,
+                null, null, null, null, null);
+
+        while (c.moveToNext()) {
+            String trigger = c.getString(c.getColumnIndex(
+                    PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER));
+            if (trigger.equals(ssid)) project = c.getString(c.getColumnIndex(
+                    PunchDatabaseHelper.ProjectColumns.NAME));
+        }
+
+        if (TextUtils.isEmpty(project)) return;
+
+        ContentValues values = new ContentValues();
+        values.put(PunchDatabaseHelper.CardColumns.TIME, now.toMillis(false));
+        values.put(PunchDatabaseHelper.CardColumns.PUNCH_IN, isPunchIn);
+        values.put(PunchDatabaseHelper.CardColumns.PROJECT, project);
+
         if (state != null) {
-            SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getWritableDatabase();
             db.insert(PunchDatabaseHelper.Tables.CARD, null, values);
         }
     }
+
+    private static final String[] CARD_SUMMARY_PROJECTION = new String[] {
+            PunchDatabaseHelper.CardColumns._ID,
+            PunchDatabaseHelper.CardColumns.PUNCH_IN,
+    };
+
+    private static final String[] PROJECT_SUMMARY_PROJECTION = new String[] {
+            PunchDatabaseHelper.ProjectColumns._ID,
+            PunchDatabaseHelper.ProjectColumns.NAME,
+            PunchDatabaseHelper.ProjectColumns.WIFI_TRIGGER,
+    };
 }
