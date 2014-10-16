@@ -47,7 +47,7 @@ public class EditProjectFragment extends Fragment {
 
         WifiManager wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
         List<String> wifiList = new ArrayList<String>();
-        if (wifi != null) {
+        if (wifi != null && wifi.getConfiguredNetworks() != null) {
             for (WifiConfiguration ap : wifi.getConfiguredNetworks()) {
                 String ssid = ap.SSID.replace("\"", "");
                 wifiList.add(ssid);

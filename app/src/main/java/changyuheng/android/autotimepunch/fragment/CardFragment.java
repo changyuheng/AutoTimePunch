@@ -108,7 +108,6 @@ public class CardFragment extends ListFragment {
             map.put("punch_out", "");
             map.put("duration", "");
             l.add(map);
-            android.util.Log.d("henry", date);
         }
 
 //        ListAdapter adapter = new SimpleAdapter(getActivity(), l, R.layout.list_item_card,
