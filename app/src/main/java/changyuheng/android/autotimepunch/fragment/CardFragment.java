@@ -124,6 +124,7 @@ public class CardFragment extends ListFragment {
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().getActionBar().setHomeButtonEnabled(true);
+        getActivity().getActionBar().setTitle(mProjectName.toString());
     }
 
     @Override

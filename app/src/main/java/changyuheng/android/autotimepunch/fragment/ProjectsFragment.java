@@ -74,6 +74,7 @@ public class ProjectsFragment extends ListFragment {
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(false);
         getActivity().getActionBar().setHomeButtonEnabled(false);
+        getActivity().getActionBar().setTitle(R.string.app_name);
     }
 
     @Override
