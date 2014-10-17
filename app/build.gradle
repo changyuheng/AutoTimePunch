@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def getCommintCount() {
+    "git rev-list master --first-parent --count".execute().text.toInteger()
+}
+
 android {
     signingConfigs {
         config {
@@ -13,7 +17,7 @@ android {
         applicationId 'changyuheng.android.autotimepunch'
         minSdkVersion 17
         targetSdkVersion 20
-        versionCode 3
+        versionCode getCommintCount()
         versionName "0.1." + versionCode
     }
     buildTypes {
