@@ -68,7 +68,7 @@ public class EventReceiver extends BroadcastReceiver {
 
         if (projects.size() == 0) return;
 
-        punch(context, projects, isPunchIn);
+        punch(context, projects, isPunchIn, false);
     }
 
     private List<String> getProjectsUUID(Context context) {
@@ -120,7 +120,12 @@ public class EventReceiver extends BroadcastReceiver {
         return result;
     }
 
-    private void punch(Context context, List<String> projects, boolean isPunchIn) {
+    private void punch(Context context, List<String> projects, boolean isPunchIn,
+                       boolean allowDuplicated) {
+        SQLiteDatabase roDB = PunchDatabaseHelper.getInstance(context).getReadableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(PunchDatabaseHelper.Tables.CARD);
+
         SQLiteDatabase db = PunchDatabaseHelper.getInstance(context).getWritableDatabase();
         Time time = new Time();
 
@@ -128,6 +133,21 @@ public class EventReceiver extends BroadcastReceiver {
         long now = time.toMillis(false);
 
         for (String project : projects) {
+            if (!allowDuplicated) {
+                Cursor c = qb.query(roDB, PunchDatabaseHelper.CARD_PROJECTION,
+                        PunchDatabaseHelper.CardColumns.PROJECT + "=\"" + project + "\"",
+                        null, null, null, PunchDatabaseHelper.CardColumns._ID + " DESC");
+                if (c != null && c.moveToFirst()) {
+                    boolean lastIsPunchIn = c.getInt(c.getColumnIndex(
+                            PunchDatabaseHelper.CardColumns.IS_PUNCH_IN)) != 0;
+                    if (lastIsPunchIn == isPunchIn) {
+                        int lastTime = c.getInt(c.getColumnIndex(
+                                PunchDatabaseHelper.CardColumns.TIME));
+                        if (now - lastTime < 60 * 1000 /* 1 minute */) continue;
+                    }
+                }
+            }
+
             ContentValues values = new ContentValues();
 
             values.put(PunchDatabaseHelper.CardColumns.PROJECT, project);
