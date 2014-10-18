@@ -1,9 +1,9 @@
-package changyuheng.android.autotimepunch;
+package io.checkio.android.app;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-import changyuheng.android.autotimepunch.fragment.ProjectsFragment;
+import io.checkio.android.app.fragment.ProjectsFragment;
 
 public class MainActivity extends Activity {
 

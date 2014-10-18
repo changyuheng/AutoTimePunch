@@ -1,4 +1,4 @@
-package changyuheng.android.autotimepunch;
+package io.checkio.android.app;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -14,7 +14,7 @@ import android.text.format.Time;
 import java.util.ArrayList;
 import java.util.List;
 
-import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
+import io.checkio.android.app.database.PunchDatabaseHelper;
 
 public class EventReceiver extends BroadcastReceiver {
     public EventReceiver() {

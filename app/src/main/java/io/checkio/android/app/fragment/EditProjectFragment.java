@@ -1,4 +1,4 @@
-package changyuheng.android.autotimepunch.fragment;
+package io.checkio.android.app.fragment;
 
 import android.app.Service;
 import android.content.ContentValues;
@@ -25,8 +25,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import changyuheng.android.autotimepunch.R;
-import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
+import io.checkio.android.app.R;
+import io.checkio.android.app.database.PunchDatabaseHelper;
 
 public class EditProjectFragment extends Fragment {
 

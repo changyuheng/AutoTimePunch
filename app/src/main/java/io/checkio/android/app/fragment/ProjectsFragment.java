@@ -1,4 +1,4 @@
-package changyuheng.android.autotimepunch.fragment;
+package io.checkio.android.app.fragment;
 
 import android.app.ListFragment;
 import android.content.res.Resources;
@@ -16,8 +16,8 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import changyuheng.android.autotimepunch.R;
-import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
+import io.checkio.android.app.R;
+import io.checkio.android.app.database.PunchDatabaseHelper;
 
 public class ProjectsFragment extends ListFragment {
 

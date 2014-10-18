@@ -1,4 +1,4 @@
-package changyuheng.android.autotimepunch.database;
+package io.checkio.android.app.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

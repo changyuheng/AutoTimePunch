@@ -1,4 +1,4 @@
-package changyuheng.android.autotimepunch.fragment;
+package io.checkio.android.app.fragment;
 
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import changyuheng.android.autotimepunch.database.PunchDatabaseHelper;
+import io.checkio.android.app.database.PunchDatabaseHelper;
 
 /**
  * A fragment representing a list of Items.

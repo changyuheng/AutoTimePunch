@@ -11,17 +11,16 @@ def getTag() {
 android {
     signingConfigs {
         config {
-            keyAlias 'AutoTimePunch'
+            keyAlias 'checkio-android-app'
             storeFile file('/home/yuheng/.android/keystore.jks')
         }
     }
     compileSdkVersion 20
     buildToolsVersion "20.0.0"
     defaultConfig {
-        applicationId 'changyuheng.android.autotimepunch'
+        applicationId 'io.checkio.android.app'
         minSdkVersion 17
         targetSdkVersion 20
-        versionCode getCommintCount()
         versionName getTag() + '.' + versionCode
     }
     buildTypes {

@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AutoTimePunch.iml" filepath="$PROJECT_DIR$/AutoTimePunch.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/checkio-android.iml" filepath="$PROJECT_DIR$/checkio-android.iml" />
     </modules>
   </component>
 </project>
