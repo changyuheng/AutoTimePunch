@@ -6,7 +6,7 @@
     <string name="action_new">New</string>
     <string name="action_search">Search</string>
     <string name="action_accept">Save</string>
-    <string name="project_list_empty">Add a project to begin to use...</string>
+    <string name="project_list_empty">Add a project to begin...</string>
     <string name="edit_project_name">Project Name</string>
     <string name="edit_project_time_zone">Time Zone</string>
     <string name="edit_project_wifi_trigger">Wi-Fi Trigger</string>
