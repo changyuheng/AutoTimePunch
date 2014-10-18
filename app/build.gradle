@@ -4,6 +4,10 @@ def getCommintCount() {
     "git rev-list master --first-parent --count".execute().text.toInteger()
 }
 
+def getTag() {
+    "git describe".execute().text.minus('\r').minus('\n')
+}
+
 android {
     signingConfigs {
         config {
@@ -18,7 +22,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 20
         versionCode getCommintCount()
-        versionName "0.1." + versionCode
+        versionName getTag() + '.' + versionCode
     }
     buildTypes {
         release {
