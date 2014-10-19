@@ -6,6 +6,7 @@
         android:title="@string/action_new"
         android:showAsAction="ifRoom"
         android:icon="@drawable/ic_action_new" />
+    <!--
     <item android:id="@+id/action_search"
         android:title="@string/action_search"
         android:showAsAction="ifRoom|collapseActionView"
@@ -16,4 +17,5 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:enabled="false" />
+    -->
 </menu>
