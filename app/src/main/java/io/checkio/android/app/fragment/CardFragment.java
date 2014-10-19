@@ -1,15 +1,12 @@
 package io.checkio.android.app.fragment;
 
 import android.app.ListFragment;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -61,13 +58,8 @@ public class CardFragment extends ListFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         initLayout(view);
-
-        return view;
     }
 
     @Override
@@ -88,7 +80,7 @@ public class CardFragment extends ListFragment {
 
         Cursor c = qb.query(db, PunchDatabaseHelper.CARD_PROJECTION,
                 PunchDatabaseHelper.CardColumns.PROJECT + "=\"" + uuid + "\"",
-                null, null, null, null);
+                null, null, null, PunchDatabaseHelper.CardColumns.TIME + " DESC");
 
         if (c == null) return;
 
@@ -161,18 +153,17 @@ public class CardFragment extends ListFragment {
 
         return uuid;
     }
+
     private void initLayout(View rootView) {
-        setMargins(rootView);
+        setListViewPadding(getListView());
     }
 
-    private void setMargins(View view) {
-        View layout = view.findViewById(
-                Resources.getSystem().getIdentifier("listContainer","id", "android"));
+    private void setListViewPadding(ListView listView) {
+        // 16dp is defined in http://developer.android.com/design/style/metrics-grids.html#examples
+        int pixels = (int) (16 * getActivity().getResources().getDisplayMetrics().density + 0.5f);
 
-        final float scale = getActivity().getResources().getDisplayMetrics().density;
-        int pixels = (int) (16 * scale + 0.5f);
-
-        layout.setPadding(pixels, 0, pixels, 0);
+        listView.setPadding(pixels, 0, pixels, 0);
+        listView.setClipToPadding(false);
+        listView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
     }
-
 }
