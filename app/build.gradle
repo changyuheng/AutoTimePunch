@@ -19,7 +19,7 @@ android {
     buildToolsVersion "20.0.0"
     defaultConfig {
         applicationId 'io.checkio.android.app'
-        minSdkVersion 17
+        minSdkVersion 15
         targetSdkVersion 20
         versionCode getCommitCount()
         versionName getTag() + '.' + versionCode
