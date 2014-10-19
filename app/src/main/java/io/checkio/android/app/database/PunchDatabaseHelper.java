@@ -1,9 +1,13 @@
 package io.checkio.android.app.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
+
+import java.util.List;
 
 /**
  * This class helps open, create, and upgrade the database file.
@@ -83,4 +87,25 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
             CardColumns.TIME,
             CardColumns.IS_PUNCH_IN,
     };
+
+    public static synchronized void deleteProjects(Context context, List<String> projectNames) {
+        SQLiteDatabase db = getInstance(context).getWritableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(Tables.PROJECT);
+        Cursor c = qb.query(db, PROJECT_PROJECTION, null, null, null, null, null);
+
+        if (c == null) return;
+
+        while (c.moveToNext()) {
+            String projectName = c.getString(c.getColumnIndex(ProjectColumns.DISPLAY_NAME));
+
+            if (!projectNames.contains(projectName)) continue;
+
+            String uuid = c.getString(c.getColumnIndex(ProjectColumns.UUID));
+
+            db.delete(Tables.CARD, CardColumns.PROJECT + "=\"" + uuid + "\"", null);
+            db.delete(Tables.PROJECT, ProjectColumns.UUID + "=\"" + uuid + "\"", null);
+        }
+    }
 }

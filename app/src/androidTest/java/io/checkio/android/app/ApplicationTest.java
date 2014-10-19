@@ -1,4 +1,4 @@
-package changyuheng.autotimepunch;
+package io.checkio.android.app;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

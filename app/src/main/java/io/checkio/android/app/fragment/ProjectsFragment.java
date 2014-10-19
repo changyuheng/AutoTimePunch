@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.checkio.android.app.R;
 import io.checkio.android.app.database.PunchDatabaseHelper;
@@ -147,7 +151,7 @@ public class ProjectsFragment extends ListFragment implements ListView.MultiChoi
     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
         MenuInflater inflater = mActivity.getMenuInflater();
         inflater.inflate(R.menu.select_projects, menu);
-        mEditMenuItem = menu.findItem(R.id.action_delete);
+        mEditMenuItem = menu.findItem(R.id.action_edit);
         return true;
     }
 
@@ -158,6 +162,28 @@ public class ProjectsFragment extends ListFragment implements ListView.MultiChoi
 
     @Override
     public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                break;
+            case R.id.action_delete:
+                ListView listView = getListView();
+                SparseBooleanArray items = listView.getCheckedItemPositions();
+                List<String> projectNames = new ArrayList<>();
+                for (int i = 0; i < listView.getCount(); i++) {
+                    if (!items.get(i)) continue;
+
+                    Cursor c = (Cursor) listView.getItemAtPosition(i);
+
+                    String projectName = c.getString(c.getColumnIndex(
+                            PunchDatabaseHelper.ProjectColumns.DISPLAY_NAME));
+
+                    projectNames.add(projectName);
+                }
+                PunchDatabaseHelper.deleteProjects(mActivity, projectNames);
+                updateAdapter();
+                break;
+        }
+        mode.finish();
         return true;
     }
 

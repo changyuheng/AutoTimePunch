@@ -65,7 +65,6 @@ public class EventReceiver extends BroadcastReceiver {
             default:
                 return;
         }
-
         if (projects.size() == 0) return;
 
         punch(context, projects, isPunchIn, false);
