@@ -1,5 +1,6 @@
 package io.checkio.android.app.fragment;
 
+import android.app.Fragment;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;

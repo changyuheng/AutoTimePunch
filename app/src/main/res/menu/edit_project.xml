@@ -1,7 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:atp="http://schemas.android.com/apk/res-auto"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
     <item android:id="@+id/action_cancel"
         android:title="@string/action_accept"
         android:showAsAction="ifRoom"
