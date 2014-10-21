@@ -17,8 +17,8 @@
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="check-io.svg"
    inkscape:export-filename="/home/yuheng/Downloads/checkio.png"
-   inkscape:export-xdpi="21.116978"
-   inkscape:export-ydpi="21.116978">
+   inkscape:export-xdpi="46.549999"
+   inkscape:export-ydpi="46.549999">
   <defs
      id="defs4">
     <linearGradient
@@ -38,8 +38,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.49497475"
-     inkscape:cx="362.22883"
-     inkscape:cy="435.68156"
+     inkscape:cx="489.64637"
+     inkscape:cy="544.82444"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -68,7 +68,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(123.23859,-34.128409)">
+     transform="translate(160.9299,-6.6017528)">
     <path
        sodipodi:type="arc"
        style="fill:#24ca2c;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -78,7 +78,7 @@
        sodipodi:rx="494.97473"
        sodipodi:ry="494.97473"
        d="m 781.85806,609.91534 c 0,273.367 -221.60773,494.97476 -494.97473,494.97476 -273.366994,0 -494.97473,-221.60776 -494.97473,-494.97476 0,-273.36699 221.607736,-494.97473 494.97473,-494.97473 273.367,0 494.97473,221.60774 494.97473,494.97473 z"
-       transform="translate(84.852814,-80.812204)" />
+       transform="translate(47.161497,-108.33886)" />
     <path
        transform="translate(1.4285612,12.858794)"
        sodipodi:type="arc"
