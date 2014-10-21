@@ -3,8 +3,8 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'checkio-android-app'
-            storeFile file('/home/yuheng/.android/keystore.jks')
+            keyAlias 'checkio'
+            storeFile file(System.getenv('HOME') + '/.android/release.keystore')
         }
     }
     compileSdkVersion 20
