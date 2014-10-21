@@ -1,13 +1,5 @@
 apply plugin: 'com.android.application'
 
-def getCommitCount() {
-    "git rev-list master --first-parent --count".execute().text.toInteger()
-}
-
-def getTag() {
-    "git describe".execute().text.minus('\r').minus('\n') - ~/-.*$/
-}
-
 android {
     signingConfigs {
         config {
@@ -21,8 +13,8 @@ android {
         applicationId 'io.checkio.android.app'
         minSdkVersion 15
         targetSdkVersion 20
-        versionCode getCommitCount()
-        versionName getTag() + '.' + versionCode
+        versionCode "git rev-list master --first-parent --count".execute().text.toInteger()
+        versionName "git describe".execute().text.minus('\r').minus('\n').replaceFirst('-', '.').minus(~/-g.*$/)
     }
     buildTypes {
         release {
