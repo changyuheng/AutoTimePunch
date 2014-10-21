@@ -2,7 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config {
+        debug {
+            storeFile file(System.getenv('HOME') + '/.android/debug.keystore')
+            storePassword 'android'
+            keyAlias 'checkio'
+            keyPassword 'android'
+        }
+        release {
             keyAlias 'checkio'
             storeFile file(System.getenv('HOME') + '/.android/release.keystore')
         }
@@ -17,10 +23,13 @@ android {
         versionName "git describe".execute().text.minus('\r').minus('\n').replaceFirst('-', '.').minus(~/-g.*$/)
     }
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
             runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
