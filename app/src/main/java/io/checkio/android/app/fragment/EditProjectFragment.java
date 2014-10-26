@@ -22,7 +22,11 @@ import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import io.checkio.android.app.R;
@@ -31,8 +35,10 @@ import io.checkio.android.app.database.PunchDatabaseHelper;
 public class EditProjectFragment extends Fragment {
 
     private EditText mProjectName;
-    private Spinner mWifiSpinner;
     private Spinner mTimeZoneSpinner;
+    private Spinner mWifiSpinner;
+
+    private Map<String, String> mTimeZoneMap;
 
     public EditProjectFragment() {
     }
@@ -46,22 +52,31 @@ public class EditProjectFragment extends Fragment {
         mProjectName = (EditText) view.findViewById(R.id.edittext_name);
 
         WifiManager wifi = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-        List<String> wifiList = new ArrayList<String>();
+        List<String> wifiList = new ArrayList<>();
         if (wifi != null && wifi.getConfiguredNetworks() != null) {
             for (WifiConfiguration ap : wifi.getConfiguredNetworks()) {
-                String ssid = ap.SSID.replace("\"", "");
-                wifiList.add(ssid);
+                wifiList.add(ap.SSID.replace("\"", ""));
             }
         }
         mWifiSpinner = (Spinner) view.findViewById(R.id.wifi_spinner);
-        mWifiSpinner.setAdapter(new ArrayAdapter<String>(getActivity(),
+        mWifiSpinner.setAdapter(new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_dropdown_item, wifiList));
 
+        List<String> timeZones = new ArrayList<>();
+        mTimeZoneMap = new HashMap<>();
+        // TODO: get the time zones from system
+        for (String timeZoneId : TimeZone.getAvailableIDs()) {
+            String timeZone = TimeZone.getTimeZone(timeZoneId).getDisplayName();
+            if (mTimeZoneMap.containsKey(timeZone)) continue;
+            mTimeZoneMap.put(timeZone, timeZoneId);
+            timeZones.add(timeZone);
+        }
+        Collections.sort(timeZones);
         mTimeZoneSpinner = (Spinner) view.findViewById(R.id.time_zone_spinner);
-        mTimeZoneSpinner.setAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_dropdown_item,
-                new String[] {Calendar.getInstance().getTimeZone().getDisplayName()}
-        ));
+        mTimeZoneSpinner.setAdapter(new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item, timeZones));
+        mTimeZoneSpinner.setSelection(timeZones.indexOf(
+                Calendar.getInstance().getTimeZone().getDisplayName()));
 
         return view;
     }
@@ -77,7 +92,7 @@ public class EditProjectFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_accept:
-                saveProjectDetail();
+                saveProjectConfigs();
             case R.id.action_cancel:
             case android.R.id.home:
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
@@ -89,9 +104,9 @@ public class EditProjectFragment extends Fragment {
         return false;
     }
 
-    private void saveProjectDetail() {
+    private void saveProjectConfigs() {
         String projectName = mProjectName.getText().toString();
-        int timeZone = 8 * 60 * 60 * 1000;
+        String timeZone = mTimeZoneMap.get(mTimeZoneSpinner.getSelectedItem().toString());
         String wifiTrigger = mWifiSpinner.getSelectedItem().toString();
 
         if (TextUtils.isEmpty(projectName)) return;
