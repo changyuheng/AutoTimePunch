@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import io.checkio.android.app.database.PunchDatabaseHelper;
 
@@ -72,6 +73,7 @@ public class CardFragment extends ListFragment {
 
     private void updateAdapter() {
         String uuid = getProjectUUID();
+        String timeZone = getProjectTimeZone(uuid);
 
         SQLiteDatabase db = PunchDatabaseHelper.getInstance(getActivity()).getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
@@ -92,10 +94,11 @@ public class CardFragment extends ListFragment {
                     PunchDatabaseHelper.CardColumns.IS_PUNCH_IN)) != 0;
 
             DateFormat df = DateFormat.getInstance();
+            df.setTimeZone(TimeZone.getTimeZone(timeZone));
             String date = df.format(new Date(unixTime));
 
             Map map = new HashMap();
-            map.put("date", date);
+            map.put("date", date + " " + (isPunchIn ? "+" : "-"));
             map.put("punch_in", "");
             map.put("punch_out", "");
             map.put("duration", "");
@@ -110,6 +113,26 @@ public class CardFragment extends ListFragment {
                 new int[] {android.R.id.text1});
 
         setListAdapter(adapter);
+    }
+
+    private String getProjectTimeZone(String uuid) {
+        String timeZone = null;
+
+        SQLiteDatabase db = PunchDatabaseHelper.getInstance(getActivity()).getReadableDatabase();
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+
+        qb.setTables(PunchDatabaseHelper.Tables.PROJECT);
+        Cursor c = qb.query(db, PunchDatabaseHelper.PROJECT_PROJECTION,
+                PunchDatabaseHelper.ProjectColumns.UUID + "=\"" + uuid + "\"",
+                null, null, null, null);
+
+        if (c == null) return timeZone;
+
+        if (!c.moveToFirst()) return timeZone;
+
+        timeZone = c.getString(c.getColumnIndex(PunchDatabaseHelper.ProjectColumns.TIME_ZONE));
+
+        return timeZone;
     }
 
     private void updateUi() {
