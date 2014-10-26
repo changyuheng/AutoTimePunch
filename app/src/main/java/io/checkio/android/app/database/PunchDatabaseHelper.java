@@ -17,7 +17,7 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "punch.db";
     private static volatile PunchDatabaseHelper sSingleton = null;
 
-    static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 2;
 
     PunchDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,11 +25,14 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE " + Tables.PROJECT + ";");
+        db.execSQL("DROP TABLE " + Tables.CARD + ";");
+
         db.execSQL("CREATE TABLE " + Tables.PROJECT + " ("
                 + ProjectColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + ProjectColumns.UUID + " TEXT,"
                 + ProjectColumns.DISPLAY_NAME + " TEXT,"
-                + ProjectColumns.TIME_ZONE + " INTEGER,"
+                + ProjectColumns.TIME_ZONE + " TEXT,"
                 + ProjectColumns.WIFI_TRIGGER + " TEXT"
                 + ");");
 
@@ -43,7 +46,15 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onCreate(db);
+        if (oldVersion < 2) {
+            onCreate(db);
+            return;
+        }
+
+        if (oldVersion != newVersion) {
+            throw new IllegalStateException(
+                    "error upgrading the database to version " + newVersion);
+        }
     }
 
     public static PunchDatabaseHelper getInstance(Context context) {
