@@ -3,6 +3,7 @@ package io.checkio.android.app.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.provider.BaseColumns;
@@ -25,8 +26,8 @@ public class PunchDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE " + Tables.PROJECT + ";");
-        db.execSQL("DROP TABLE " + Tables.CARD + ";");
+        try {db.execSQL("DROP TABLE " + Tables.PROJECT + ";");} catch (SQLiteException e) {}
+        try {db.execSQL("DROP TABLE " + Tables.CARD + ";");} catch (SQLiteException e) {}
 
         db.execSQL("CREATE TABLE " + Tables.PROJECT + " ("
                 + ProjectColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
